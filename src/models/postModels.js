@@ -48,4 +48,18 @@ const findPost = async (payload) => {
     }
 }
 
-module.exports = { getPosts, createPost, updatePost, findPost }
+const deletePost = async (payload) => {
+    try {
+        const query = {
+            text: "DELETE FROM posts WHERE id = $1",
+            values: [payload],
+        };
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (e) {
+        console.log("Error al eliminar datos en tabla posts:", e.code, e.message)
+        throw new Error(e);
+    }
+}
+
+module.exports = { getPosts, createPost, updatePost, findPost, deletePost }
