@@ -15,19 +15,23 @@ const getAllPosts = async (req, res) => {
 
 const createNewPost = async (req, res) => {
     try {
-        const newPost = await createPost(req.body);
+        const payload = req.body
+        const posts = await getPosts();
         if(
-            !newPost.titulo ||
-            !newPost.url ||
-            !newPost.descripcion ||
-            (newPost.url.endsWith(".jpg") === false &&
-            newPost.url.endsWith(".png") === false)
+            !payload.titulo || // Validacion de que tenga titulo
+            !payload.url || // Validacion de que tenga url
+            !payload.descripcion || // Validacion de que tenga descripcion
+            (payload.url.endsWith(".jpg") === false && 
+            payload.url.endsWith(".png") === false) || // Validaciones de que sea una imagen jpg o png
+            (posts.findIndex((post) => post.img === payload.url) > -1) // Validacion de que no se repita la URL de la img
         ) {
             return res.status(400).json({
                 message:
-                "Error 400. Por favor, rellena todos los campos, y la URL debe terminar en .jpg o .png",
+                "Error 400. Por favor, rellena todos los campos, y la URL debe ser unica y terminar en .jpg o .png",
             })
         }
+        const newPost = await createPost(payload);
+        console.log("Post agregado con exito!")
         res.json(newPost);
     } catch (e) {
         console.log(e);
