@@ -1,6 +1,8 @@
 const {
     getPosts,
-    createPost
+    createPost,
+    updatePost,
+    findPost
 } = require('../models/postModels');
 
 const getAllPosts = async (req, res) => {
@@ -39,7 +41,27 @@ const createNewPost = async (req, res) => {
     }
 };
 
+const updatePostById = async (req, res) => {
+    const { id } = req.params;
+    const payload = req.body;
+    payload.id = id;
+    try {
+        const existPost = await findPost(id);
+        payload.like = existPost[0].likes + 1
+        if(existPost.length === 0){
+            console.log("Post no existe")
+            return res.status(404).json({ message: "El post no existe" })
+        }
+        const updatedPost = await updatePost(payload);
+        res.json(updatedPost)
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ message: "Error 500. No se pudo actualizar el post" })
+    }
+}
+
 module.exports = {
     getAllPosts,
     createNewPost,
+    updatePostById
 };

@@ -20,4 +20,32 @@ const createPost = async (payload) => {
     }
 }
 
-module.exports = { getPosts, createPost }
+const updatePost = async (payload) => {
+    const query = {
+        text: "UPDATE posts SET likes = $1 WHERE id = $2 RETURNING *",
+        values: [payload.like , payload.id],
+    };
+    try {
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (e) {
+        console.log("Error al actualizar los likes en tabla posts:", e.code, e.message);
+        throw new Error(e);
+    }
+}
+
+const findPost = async (payload) => {
+    try {
+        const query = {
+            text: "SELECT * FROM posts WHERE id = $1",
+            values: [payload],
+        };
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (e) {
+        console.log("Error al buscar el post en tabla posts:", e.code, e.message);
+        throw new Error(e);
+    }
+}
+
+module.exports = { getPosts, createPost, updatePost, findPost }
