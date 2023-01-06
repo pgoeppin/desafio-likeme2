@@ -1,7 +1,7 @@
 const pool = require("../helpers/connectionDB").getInstance();
 
 const getPosts = async () => {
-    const { rows } = await pool.query("SELECT * FROM posts");
+    const { rows } = await pool.query("SELECT * FROM posts ORDER BY id ASC");
     // console.log(rows);
     return rows;
 };
